@@ -1,49 +1,135 @@
-import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import React, { useEffect, useState } from 'react';
+import { useParams, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
+import { MapPin, Maximize, Bed, Bath, MessageCircle, ArrowLeft, Heart } from 'lucide-react';
+import { motion } from 'framer-motion';
 import MortgageCalculator from '../components/public/MortgageCalculator';
 
 const PropertyDetail = () => {
   const { id } = useParams();
   const [property, setProperty] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const fetchProperty = async () => {
+      const { data, error } = await supabase
+        .from('properties')
+        .select('*')
+        .eq('id', id)
+        .single();
+      
+      if (error) console.error(error);
+      else setProperty(data);
+      setLoading(false);
+    };
     fetchProperty();
   }, [id]);
 
-  const fetchProperty = async () => {
-    const { data } = await supabase
-      .from('properties')
-      .select('*')
-      .eq('id', id)
-      .single();
-    setProperty(data);
-  };
-
-  if (!property) return <div className="p-12 text-center text-muted">Cargando...</div>;
+  if (loading) return <div className="container" style={{ padding: '10rem 0', textAlign: 'center' }}>Cargando...</div>;
+  if (!property) return <div className="container" style={{ padding: '10rem 0', textAlign: 'center' }}>Propiedad no encontrada.</div>;
 
   return (
     <motion.div 
-      className="container py-12"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
+      initial={{ opacity: 0 }} 
+      animate={{ opacity: 1 }}
+      className="container" 
+      style={{ padding: '6rem 1.5rem' }}
     >
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-        <div className="lg:col-span-2">
-          <img src={property.image_url} alt={property.title} className="w-full h-[500px] object-cover rounded-2xl mb-8" />
-          <h1 className="text-4xl font-bold mb-4">{property.title}</h1>
-          <p className="text-2xl text-accent font-semibold mb-6">${property.price.toLocaleString()}</p>
-          <div className="prose prose-invert max-w-none">
+      <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '2rem', color: 'var(--text-muted)' }}>
+        <ArrowLeft size={20} /> Volver al listado
+      </Link>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '3rem' }}>
+        <section>
+          {/* Main Image Slider Placeholder */}
+          <div className="glass-card" style={{ height: '500px', overflow: 'hidden', marginBottom: '2rem' }}>
+            <img 
+              src={property.images?.[0]} 
+              alt={property.title} 
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            />
+          </div>
+
+          <div style={{ marginBottom: '2rem' }}>
+            <h1 style={{ fontSize: '3rem', fontWeight: '900', marginBottom: '1rem' }}>{property.title}</h1>
+            <p style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '1.25rem', color: 'var(--text-muted)' }}>
+              <MapPin /> {property.location}
+            </p>
+          </div>
+
+          <p style={{ fontSize: '1.125rem', lineHeight: '1.8', color: 'var(--text-muted)', marginBottom: '3rem' }}>
             {property.description}
+          </p>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.5rem', marginBottom: '4rem' }}>
+            <div className="glass-card" style={{ padding: '1.5rem', textAlign: 'center' }}>
+              <Maximize size={24} color="var(--accent)" style={{ marginBottom: '0.5rem' }} />
+              <div style={{ fontWeight: '700', fontSize: '1.25rem' }}>{property.m2} m²</div>
+              <div style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>Superficie</div>
+            </div>
+            <div className="glass-card" style={{ padding: '1.5rem', textAlign: 'center' }}>
+              <Bed size={24} color="var(--accent)" style={{ marginBottom: '0.5rem' }} />
+              <div style={{ fontWeight: '700', fontSize: '1.25rem' }}>{property.rooms}</div>
+              <div style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>Ambientes</div>
+            </div>
+            <div className="glass-card" style={{ padding: '1.5rem', textAlign: 'center' }}>
+              <Bath size={24} color="var(--accent)" style={{ marginBottom: '0.5rem' }} />
+              <div style={{ fontWeight: '700', fontSize: '1.25rem' }}>{property.bathrooms}</div>
+              <div style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>Baños</div>
+            </div>
           </div>
-        </div>
-        <div className="space-y-8">
-          <div className="glass-morphism p-6">
-            <h3 className="text-xl font-bold mb-4">Calculadora Hipotecaria</h3>
-            <MortgageCalculator price={property.price} />
+
+          {/* Map Placeholder */}
+          <div className="glass-card" style={{ height: '400px', background: '#e2e8f0', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <div style={{ textAlign: 'center' }}>
+              <MapPin size={48} color="var(--text-muted)" />
+              <p style={{ marginTop: '1rem', color: 'var(--text-muted)' }}>Google Maps Integration Placeholder</p>
+            </div>
           </div>
-        </div>
+        </section>
+
+        <aside>
+          <div className="glass-card" style={{ padding: '2rem', position: 'sticky', top: '7rem' }}>
+            <div style={{ marginBottom: '2rem' }}>
+              <span style={{ fontSize: '0.875rem', textTransform: 'uppercase', fontWeight: '700', color: 'var(--accent)' }}>Precio de {property.operation_type}</span>
+              <h2 style={{ fontSize: '2.5rem', fontWeight: '900' }}>USD {property.price.toLocaleString()}</h2>
+              {property.expenses > 0 && (
+                <p style={{ color: 'var(--text-muted)' }}>+ Expensas: ${property.expenses.toLocaleString()}</p>
+              )}
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <h3 style={{ fontWeight: '700' }}>Consultar por esta propiedad</h3>
+              <input type="text" placeholder="Tu Nombre" className="search-input" />
+              <input type="email" placeholder="Tu Email" className="search-input" />
+              <textarea placeholder="Hola, me gustaría recibir más información..." className="search-input" style={{ minHeight: '120px', resize: 'none' }}></textarea>
+              <button className="btn-primary" style={{ width: '100%', padding: '1rem' }}>Enviar Consulta</button>
+            </div>
+
+            <a 
+              href={`https://wa.me/5491100000000?text=Hola! Me interesa la propiedad: ${property.title}`} 
+              className="glass-card"
+              style={{ 
+                marginTop: '1.5rem', 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center', 
+                gap: '0.75rem', 
+                padding: '1rem', 
+                background: '#25D366', 
+                color: 'white',
+                fontWeight: '700',
+                border: 'none'
+              }}
+            >
+              <MessageCircle size={20} /> Contactar por WhatsApp
+            </a>
+
+            {property.operation_type === 'Venta' && (
+              <MortgageCalculator price={property.price} />
+            )}
+          </div>
+        </aside>
       </div>
     </motion.div>
   );
