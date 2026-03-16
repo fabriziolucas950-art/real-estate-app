@@ -1,18 +1,33 @@
+import React from 'react';
 import { Link } from 'react-router-dom';
-import { Home, User, Mail, Search } from 'lucide-react';
+import { Home, Heart, User } from 'lucide-react';
 
 const Navbar = () => {
   return (
-    <nav className="sticky top-0 z-50 glass-morphism mx-4 mt-4 py-4 px-8 flex justify-between items-center">
-      <Link to="/" className="text-2xl font-bold bg-gradient-to-r from-accent to-accent-light bg-clip-text text-transparent">
-        ESTATE PREM
+    <nav className="navbar glass-card" style={{ 
+      position: 'sticky', 
+      top: '1rem', 
+      margin: '0 1rem', 
+      zIndex: 1000, 
+      display: 'flex', 
+      justifyContent: 'space-between', 
+      padding: '1rem 2rem',
+      alignItems: 'center'
+    }}>
+      <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: '800', fontSize: '1.5rem', color: 'var(--primary)' }}>
+        <Home size={28} color="var(--accent)" />
+        <span>LUX<span style={{ color: 'var(--accent)' }}>REALTY</span></span>
       </Link>
-      <div className="flex gap-8 items-center">
-        <Link to="/" className="hover:text-accent flex items-center gap-2"><Home size={20} /> Inicio</Link>
-        <Link to="/admin" className="hover:text-accent flex items-center gap-2"><User size={20} /> Admin</Link>
-        <button className="btn-primary flex items-center gap-2">
-          <Mail size={18} /> Contactar
-        </button>
+      
+      <div style={{ display: 'flex', gap: '2rem', fontWeight: '500' }}>
+        <Link to="/" className="nav-link">Propiedades</Link>
+        <Link to="/#servicios" className="nav-link">Servicios</Link>
+        <Link to="/#contacto" className="nav-link">Contacto</Link>
+      </div>
+
+      <div style={{ display: 'flex', gap: '1rem' }}>
+        <button className="icon-btn"><Heart size={20} /></button>
+        <Link to="/admin" className="icon-btn"><User size={20} /></Link>
       </div>
     </nav>
   );

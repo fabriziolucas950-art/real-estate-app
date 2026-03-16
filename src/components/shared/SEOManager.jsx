@@ -1,16 +1,19 @@
-import { Helmet } from 'react-helmet';
+import React, { useEffect } from 'react';
 
-const SEOManager = ({ title, description }) => {
-  const defaultTitle = 'Real Estate Premium | Encuentra tu hogar ideal';
-  const defaultDesc = 'Plataforma líder en bienes raíces de lujo con integración de Supabase y diseño ultra moderno.';
+const SEOManager = ({ property }) => {
+  useEffect(() => {
+    if (property) {
+      document.title = `${property.title} | LUXREALTY - ${property.location}`;
+      const metaDescription = document.querySelector('meta[name="description"]');
+      if (metaDescription) {
+        metaDescription.setAttribute('content', `${property.operation_type} ${property.title} en ${property.location}. ${property.description.substring(0, 150)}...`);
+      }
+    } else {
+      document.title = 'LUXREALTY | Inmobiliaria de Selección';
+    }
+  }, [property]);
 
-  return (
-    <Helmet>
-      <title>{title || defaultTitle}</title>
-      <meta name="description" content={description || defaultDesc} />
-      <meta property="og:type" content="website" />
-    </Helmet>
-  );
+  return null;
 };
 
 export default SEOManager;

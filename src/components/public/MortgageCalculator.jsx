@@ -1,41 +1,64 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
+import { Calculator } from 'lucide-react';
 
 const MortgageCalculator = ({ price }) => {
-  const [downpayment, setDownpayment] = useState(price * 0.2);
+  const [downPayment, setDownPayment] = useState(price * 0.2);
+  const [interestRate, setInterestRate] = useState(5.5);
   const [years, setYears] = useState(30);
-  const interest = 0.05;
 
-  const calculate = () => {
-    const loan = price - downpayment;
-    const monthlyInterest = interest / 12;
-    const n = years * 12;
-    return (loan * monthlyInterest * Math.pow(1 + monthlyInterest, n)) / (Math.pow(1 + monthlyInterest, n) - 1);
-  };
+  const loanAmount = price - downPayment;
+  const monthlyRate = interestRate / 100 / 12;
+  const numberOfPayments = years * 12;
+  
+  const monthlyPayment = loanAmount > 0 
+    ? (loanAmount * monthlyRate * Math.pow(1 + monthlyRate, numberOfPayments)) / (Math.pow(1 + monthlyRate, numberOfPayments) - 1)
+    : 0;
 
   return (
-    <div className="space-y-4">
-      <div>
-        <label className="text-xs text-muted block mb-1">Pago Inicial</label>
-        <input 
-          type="number" 
-          value={downpayment} 
-          onChange={(e) => setDownpayment(e.target.value)}
-          className="w-full bg-secondary/50 border border-glass-border rounded p-2"
-        />
+    <div className="glass-card" style={{ padding: '1.5rem', marginTop: '2rem' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem', fontWeight: '700' }}>
+        <Calculator size={20} color="var(--accent)" />
+        <span>Calculadora Hipotecaria</span>
       </div>
-      <div>
-        <label className="text-xs text-muted block mb-1">Plazo (Años): {years}</label>
-        <input 
-          type="range" 
-          min="5" max="35" 
-          value={years} 
-          onChange={(e) => setYears(e.target.value)}
-          className="w-full accent-accent"
-        />
-      </div>
-      <div className="pt-4 border-t border-glass-border">
-        <p className="text-xs text-muted">Pago Mensual Estimado</p>
-        <p className="text-3xl font-bold text-success">${Math.round(calculate()).toLocaleString()}</p>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        <div>
+          <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '600', marginBottom: '0.25rem' }}>Entrega Inicial (USD)</label>
+          <input 
+            type="number" 
+            className="search-input" style={{ width: '100%', padding: '0.5rem' }}
+            value={downPayment}
+            onChange={(e) => setDownPayment(Number(e.target.value))}
+          />
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+          <div>
+            <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '600', marginBottom: '0.25rem' }}>Tasa interés %</label>
+            <input 
+              type="number" step="0.1"
+              className="search-input" style={{ width: '100%', padding: '0.5rem' }}
+              value={interestRate}
+              onChange={(e) => setInterestRate(Number(e.target.value))}
+            />
+          </div>
+          <div>
+            <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '600', marginBottom: '0.25rem' }}>Años</label>
+            <input 
+              type="number"
+              className="search-input" style={{ width: '100%', padding: '0.5rem' }}
+              value={years}
+              onChange={(e) => setYears(Number(e.target.value))}
+            />
+          </div>
+        </div>
+
+        <div style={{ marginTop: '1rem', padding: '1rem', background: 'var(--background)', borderRadius: '0.5rem', textAlign: 'center' }}>
+          <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Cuota Mensual Est.</div>
+          <div style={{ fontSize: '1.5rem', fontWeight: '800', color: 'var(--accent)' }}>
+            USD {monthlyPayment.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+          </div>
+        </div>
       </div>
     </div>
   );
