@@ -40,7 +40,7 @@ const PropertyDetail = ({ propertyId, setView }) => {
           position: 'absolute', top: '7rem', left: '2rem', zIndex: 100,
           background: 'rgba(255, 255, 255, 0.95)', border: 'none', padding: '0.8rem 1.5rem',
           borderRadius: '100px', display: 'flex', alignItems: 'center', gap: '0.5rem',
-          fontWeight: 800, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '1px',
+          textTransform: 'uppercase', letterSpacing: '1px',
           cursor: 'pointer', boxShadow: 'var(--shadow-subtle)', color: 'var(--primary)'
         }}
       >
@@ -111,17 +111,17 @@ const PropertyDetail = ({ propertyId, setView }) => {
           {/* Main Info Column */}
           <div>
              <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.2rem' }}>
-                <span style={{ background: 'var(--primary)', color: 'white', padding: '0.4rem 1rem', borderRadius: '0', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '2px' }}>{property.operation}</span>
-                <span style={{ background: 'rgba(197, 160, 89, 0.1)', color: 'var(--accent)', padding: '0.4rem 1rem', borderRadius: '0', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '2px' }}>{property.status}</span>
+                <span className="text-body-small" style={{ background: 'var(--primary)', color: 'white', padding: '0.4rem 1rem', borderRadius: '0', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '2px' }}>{property.operation}</span>
+                <span className="text-body-small" style={{ background: 'rgba(197, 160, 89, 0.1)', color: 'var(--accent)', padding: '0.4rem 1rem', borderRadius: '0', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '2px' }}>{property.status}</span>
              </div>
-             <h1 style={{ fontSize: '3rem', fontWeight: 900, color: 'var(--primary)', lineHeight: 1.1, marginBottom: '1rem', letterSpacing: '-0.03em' }}>{property.title}</h1>
-             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-muted)', fontWeight: 500, fontSize: '1.1rem', marginBottom: '3rem' }}>
+             <h1 className="text-h1" style={{ color: 'var(--primary)', marginBottom: '1rem' }}>{property.title}</h1>
+             <div className="text-body-large" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-muted)', marginBottom: '3rem' }}>
                 <MapPin size={20} color="var(--accent)" /> {property.location.neighborhood}, {property.location.city}
              </div>
 
              {/* The "Technical Sheet" Grid */}
              <div style={{ marginBottom: '4rem' }}>
-                <h3 style={{ fontSize: '1.2rem', textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--primary)', fontWeight: 900, marginBottom: '2rem', borderBottom: '2px solid var(--accent)', paddingBottom: '0.5rem', display: 'inline-block' }}>
+                <h3 className="text-h4" style={{ textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--primary)', marginBottom: '2rem', borderBottom: '2px solid var(--accent)', paddingBottom: '0.5rem', display: 'inline-block' }}>
                   Ficha Técnica
                 </h3>
                 
@@ -141,12 +141,12 @@ const PropertyDetail = ({ propertyId, setView }) => {
              {/* Amenities Section */}
              {property.attributes.amenities.length > 0 && (
                <div style={{ marginBottom: '4rem' }}>
-                  <h3 style={{ fontSize: '1.2rem', textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--primary)', fontWeight: 900, marginBottom: '2rem', borderBottom: '2px solid var(--accent)', paddingBottom: '0.5rem', display: 'inline-block' }}>
+                  <h3 className="text-h4" style={{ textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--primary)', marginBottom: '2rem', borderBottom: '2px solid var(--accent)', paddingBottom: '0.5rem', display: 'inline-block' }}>
                     Comodidades y Extras
                   </h3>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem' }}>
                     {property.attributes.amenities.map(amenity => (
-                      <div key={amenity} style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', fontSize: '1.05rem', color: 'var(--primary)', fontWeight: 500 }}>
+                      <div key={amenity} className="text-body-large" style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', color: 'var(--primary)' }}>
                         <CheckCircle size={18} color="var(--accent)" /> {amenity}
                       </div>
                     ))}
@@ -159,35 +159,36 @@ const PropertyDetail = ({ propertyId, setView }) => {
           <div style={{ position: 'sticky', top: '100px' }}>
             <div style={{ background: 'white', border: '1px solid var(--accent)', padding: '2.5rem', borderRadius: 'var(--radius-lg)', boxShadow: '0 20px 40px rgba(0,0,0,0.08)' }}>
               
-              <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 800, letterSpacing: '2px', marginBottom: '0.5rem' }}>Valor Referencial</div>
-              <div style={{ fontSize: '2.8rem', fontWeight: 900, color: 'var(--accent)', lineHeight: 1, marginBottom: '2rem', letterSpacing: '-0.05em' }}>
+              <div className="text-body-small" style={{ color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 800, letterSpacing: '2px', marginBottom: '0.5rem' }}>Valor Referencial</div>
+              <div className="text-h2" style={{ color: 'var(--accent)', marginBottom: '2rem' }}>
                 {property.price_data.currency} {property.price_data.amount.toLocaleString()}
               </div>
               
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem', marginBottom: '2.5rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '0.8rem', borderBottom: '1px solid var(--border)' }}>
-                   <span style={{ color: 'var(--text-muted)', fontSize: '0.9rem', fontWeight: 600 }}>Expensas</span>
-                   <span style={{ color: 'var(--primary)', fontSize: '0.9rem', fontWeight: 800 }}>${property.price_data.expenses?.toLocaleString() || '0'}</span>
+                <div className="text-body-medium" style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '0.8rem', borderBottom: '1px solid var(--border)' }}>
+                   <span style={{ color: 'var(--text-muted)' }}>Expensas</span>
+                   <span style={{ color: 'var(--primary)' }}>${property.price_data.expenses?.toLocaleString() || '0'}</span>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '0.8rem', borderBottom: '1px solid var(--border)' }}>
-                   <span style={{ color: 'var(--text-muted)', fontSize: '0.9rem', fontWeight: 600 }}>Impuestos</span>
-                   <span style={{ color: 'var(--primary)', fontSize: '0.9rem', fontWeight: 800 }}>${property.price_data.impuestos?.toLocaleString() || '0'}</span>
+                <div className="text-body-medium" style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '0.8rem', borderBottom: '1px solid var(--border)' }}>
+                   <span style={{ color: 'var(--text-muted)' }}>Impuestos</span>
+                   <span style={{ color: 'var(--primary)' }}>${property.price_data.impuestos?.toLocaleString() || '0'}</span>
                 </div>
               </div>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                 <button 
-                  className="btn-premium btn-premium-primary" 
-                  style={{ width: '100%', padding: '1.2rem', fontSize: '0.9rem', borderRadius: '8px', justifyContent: 'center' }}
+                  className="btn-premium btn-premium-primary text-button" 
+                  style={{ width: '100%', padding: '1.2rem', borderRadius: '8px', justifyContent: 'center' }}
                 >
                   Consultar Ahora
                 </button>
                 <button 
+                  className="text-button"
                   onClick={() => window.open(`https://wa.me/5491100000000?text=Hola,%20me%20interesa%20la%20propiedad:%20${property.title}`, '_blank')}
                   style={{ 
-                    width: '100%', padding: '1.2rem', fontSize: '0.9rem', borderRadius: '8px', 
-                    background: '#25D366', color: 'white', border: 'none', fontWeight: 800, 
-                    textTransform: 'uppercase', letterSpacing: '1px', display: 'flex', 
+                    width: '100%', padding: '1.2rem', borderRadius: '8px', 
+                    background: '#25D366', color: 'white', border: 'none', 
+                    display: 'flex', 
                     alignItems: 'center', justifyContent: 'center', gap: '0.8rem', cursor: 'pointer',
                     boxShadow: '0 10px 20px rgba(37, 211, 102, 0.2)', transition: 'transform 0.2s'
                   }}
@@ -210,8 +211,8 @@ const PropertyDetail = ({ propertyId, setView }) => {
 // Sub-component for Tech Items
 const TechItem = ({ label, value, highlight }) => (
   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-    <span style={{ fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text-muted)', fontWeight: 700 }}>{label}</span>
-    <span style={{ fontSize: '1.1rem', fontWeight: 800, color: highlight ? 'var(--accent)' : 'var(--primary)' }}>{value}</span>
+    <span className="text-body-small" style={{ textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text-muted)' }}>{label}</span>
+    <span className="text-body-large" style={{ color: highlight ? 'var(--accent)' : 'var(--primary)' }}>{value}</span>
   </div>
 );
 
@@ -225,8 +226,6 @@ const tabStyle = (isActive) => ({
   display: 'flex',
   alignItems: 'center',
   gap: '0.5rem',
-  fontWeight: 700,
-  fontSize: '0.85rem',
   cursor: 'pointer',
   transition: '0.3s',
   textTransform: 'uppercase',

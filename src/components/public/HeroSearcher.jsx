@@ -23,18 +23,14 @@ const HeroSearcher = () => {
         transition={{ duration: 1.2, ease: "easeOut" }}
         style={{ textAlign: 'center', marginBottom: '4rem' }}
       >
-        <h1 style={{ 
-          fontSize: 'clamp(2rem, 5vw, 4.5rem)', 
+        <h1 className="text-h1" style={{ 
           color: 'white', 
           marginBottom: '1rem',
-          fontWeight: 700,
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
           gap: '0.5rem',
-          fontFamily: 'Playfair Display, serif',
-          lineHeight: 1.1,
-          letterSpacing: '-0.03em'
+          fontFamily: 'Playfair Display, serif'
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1.2rem', flexWrap: 'wrap', justifyContent: 'center' }}>
             <span>Encontrá tu próximo</span>
@@ -65,9 +61,8 @@ const HeroSearcher = () => {
           </div>
         </h1>
         
-        <p style={{ 
+        <p className="text-h6" style={{ 
           color: 'rgba(255,255,255,0.7)', 
-          fontSize: '1.25rem', 
           maxWidth: '650px', 
           margin: '0 auto', 
           fontFamily: 'Outfit, sans-serif',
@@ -96,14 +91,15 @@ const HeroSearcher = () => {
         <div style={{ textAlign: 'left', borderRight: '1px solid var(--border)', paddingRight: '2rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.5rem', color: 'var(--text-muted)' }}>
             <MapPin size={16} color="var(--accent)" /> 
-            <span style={{ fontSize: '0.65rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px' }}>Ubicación</span>
+            <span className="text-body-small" style={{ fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px' }}>Ubicación</span>
           </div>
           <input 
             type="text" 
             placeholder="¿Dónde buscamos?" 
+            className="text-body-large"
             style={{ 
               width: '100%', padding: '0.3rem 0', background: 'transparent', 
-              border: 'none', outline: 'none', fontSize: '1.1rem', 
+              border: 'none', outline: 'none', 
               fontWeight: 600, color: 'var(--primary)',
               fontFamily: 'Outfit, sans-serif'
             }} 
@@ -113,11 +109,11 @@ const HeroSearcher = () => {
         <div style={{ textAlign: 'left', borderRight: '1px solid var(--border)', paddingRight: '2rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.5rem', color: 'var(--text-muted)' }}>
             <Building size={16} color="var(--accent)" /> 
-            <span style={{ fontSize: '0.65rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px' }}>Operación</span>
+            <span className="text-body-small" style={{ fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px' }}>Operación</span>
           </div>
-          <select style={{ 
+          <select className="text-body-large" style={{ 
             width: '100%', padding: '0.3rem 0', background: 'transparent', 
-            border: 'none', outline: 'none', fontSize: '1.1rem', 
+            border: 'none', outline: 'none', 
             fontWeight: 600, color: 'var(--primary)', cursor: 'pointer',
             fontFamily: 'Outfit, sans-serif'
           }}>
@@ -129,11 +125,11 @@ const HeroSearcher = () => {
         <div style={{ textAlign: 'left' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.5rem', color: 'var(--text-muted)' }}>
             <HomeIcon size={16} color="var(--accent)" /> 
-            <span style={{ fontSize: '0.65rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px' }}>Tipo</span>
+            <span className="text-body-small" style={{ fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px' }}>Tipo</span>
           </div>
-          <select style={{ 
+          <select className="text-body-large" style={{ 
             width: '100%', padding: '0.3rem 0', background: 'transparent', 
-            border: 'none', outline: 'none', fontSize: '1.1rem', 
+            border: 'none', outline: 'none', 
             fontWeight: 600, color: 'var(--primary)', cursor: 'pointer',
             fontFamily: 'Outfit, sans-serif'
           }}>
@@ -144,13 +140,12 @@ const HeroSearcher = () => {
         </div>
 
         <button 
-          className="btn-premium btn-premium-primary" 
+          className="btn-premium btn-premium-primary text-button" 
           style={{ 
             padding: '1.2rem', 
             justifyContent: 'center', 
             width: '100%',
             height: '100%',
-            fontSize: '0.8rem',
             letterSpacing: '2px',
             borderRadius: '0'
           }}

@@ -1,126 +1,158 @@
-import React, { useState } from 'react';
+import React, { useMemo } from 'react';
 import { useStore } from '../../lib/mockStore';
+import { Bed, Bath, ArrowRight, Grid, LayoutList } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MapPin, BedDouble, Bath, Maximize } from 'lucide-react';
-import MapsModal from './MapsModal';
 
-const PropertyGrid = ({ setView, limit }) => {
-  // Using the new filtered getter instead of raw properties
-  const allFilteredProperties = useStore(state => state.getFilteredProperties());
-  const filters = useStore(state => state.filters); // added to listen to changes
+const PropertyGrid = ({ setView }) => {
+  const { properties, filteredProperties, filters, setDetailedPropertyId } = useStore();
+
+  const isFiltered = filters.location !== '' || filters.operation !== 'Todas' || filters.type !== 'Todos' || filters.rooms !== 'Todos';
   
-  const [selectedProp, setSelectedProp] = useState(null);
+  // Use filtered properties if active, otherwise grab visually top properties
+  const displayProps = isFiltered 
+    ? filteredProperties 
+    : properties.filter(p => p.status === 'Destacado').slice(0, 3);
+  
+  const isEmpty = isFiltered && filteredProperties.length === 0;
 
-  // Apply limit if provided (e.g for Home page)
-  const properties = limit ? allFilteredProperties.slice(0, limit) : allFilteredProperties;
-
-  if (properties.length === 0) {
-    // Empty State Handling
-    return (
-      <div style={{ textAlign: 'center', padding: '6rem 2rem', background: '#F8F9FA', borderRadius: 'var(--radius-lg)', border: '1px dashed var(--border)' }}>
-        <h3 style={{ fontSize: '2rem', color: 'var(--primary)', fontWeight: 800, marginBottom: '1rem', letterSpacing: '-1px' }}>No encontramos propiedades exactas.</h3>
-        <p style={{ color: 'var(--text-muted)', fontSize: '1.2rem', marginBottom: '2rem' }}>Prueba ajustando los filtros o revisa estas recomendaciones destacadas:</p>
-        <button 
-          onClick={() => useStore.getState().setFilters({ location: '', operation: 'Todos', propertyType: 'Todos', bedrooms: 'Todos', bathrooms: 'Todos', amenities: [], priceRange: [0, 1000000] })}
-          className="btn-premium" style={{ background: 'white', color: 'var(--primary)' }}
-        >
-          Limpiar todos los filtros
-        </button>
-      </div>
-    );
-  }
+  const onPropertySelect = (id) => {
+    setDetailedPropertyId(id);
+    setView('property-detail');
+  };
 
   return (
-    <div className="property-grid-container" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '3rem' }}>
-      <MapsModal 
-        isOpen={!!selectedProp} 
-        onClose={() => setSelectedProp(null)} 
-        property={selectedProp} 
-      />
+    <div className="container" id="properties" style={{ padding: '6rem 5%' }}>
+      
+      {!isFiltered && (
+        <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+        <AnimatePresence mode="wait">
+          <h3 key={setView} className="text-h3" style={{ color: 'var(--primary)', marginBottom: '0.5rem', letterSpacing: '-0.5px' }}>
+            {setView === 'public' ? 'Propiedades Recientes' : 'Explorar Mapa'}
+          </h3>
+        </AnimatePresence>
+        <p className="text-body-large" style={{ color: 'var(--text-muted)' }}>Pero estas opciones destacadas te pueden interesar:</p>
+      </div>
+      )}
 
-      <AnimatePresence>
-        {properties.map((p, i) => (
-          <motion.div 
-            key={p.id}
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9 }}
-            transition={{ duration: 0.6, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] }}
-            className="property-card glass-panel"
-            style={{ 
-              display: 'flex', 
-              flexDirection: 'column',
+      {isEmpty && (
+        <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+        <AnimatePresence mode="wait">
+          <h3 key={setView} className="text-h3" style={{ color: 'var(--primary)', marginBottom: '0.5rem', letterSpacing: '-0.5px' }}>
+            {setView === 'public' ? 'Propiedades Recientes' : 'Explorar Mapa'}
+          </h3>
+        </AnimatePresence>
+        <p className="text-body-large" style={{ color: 'var(--text-muted)' }}>Pero estas opciones destacadas te pueden interesar:</p>
+      </div>
+      )}
+
+      {displayProps.map((p, idx) => (
+        <motion.div 
+          key={p.id}
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: idx * 0.1 }}
+          className="property-card"
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'minmax(400px, 1fr) 1.2fr',
+            borderRadius: 'var(--radius-md)',
+            marginBottom: '3rem',
+            background: 'var(--white)',
+            boxShadow: 'var(--shadow-subtle)',
+            border: '1px solid var(--border)'
+          }}
+        >
+          {/* Image Side */}
+          <div style={{ position: 'relative', overflow: 'hidden' }}>
+            <div 
+              className="card-img"
+              style={{
+                width: '100%',
+                height: '100%',
+                minHeight: '350px',
+                backgroundImage: `url(${p.media.find(m => m.type === 'Foto')?.url || p.media[0]?.url})`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+              }}
+            />
+            <div style={{ 
+              position: 'absolute', 
+              top: '1.5rem', 
+              left: '1.5rem', 
+              background: 'rgba(16, 24, 40, 0.7)', backdropFilter: 'blur(8px)',
+                padding: '0.4rem 1rem', borderRadius: '100px',
+                color: 'white', fontWeight: 800, textTransform: 'uppercase', 
+                letterSpacing: '1px'
+            }}>
+              {p.operation}
+            </div>
+            
+            <button style={{
+              position: 'absolute',
+              bottom: '1.5rem',
+              right: '1.5rem',
+              background: 'rgba(255,255,255,0.9)',
               border: 'none',
-              background: 'transparent'
-            }}
-          >
-            <div style={{ position: 'relative', height: '350px', overflow: 'hidden', marginBottom: '1.2rem', borderRadius: '16px' }}>
-              <img 
-                onClick={() => setView('property-detail', p.id)}
-                src={p.media[0]} 
-                alt={p.title}
-                style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.8s ease', cursor: 'pointer' }}
-                onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
-                onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
-                loading="lazy"
-              />
-              <div style={{ position: 'absolute', top: '1.5rem', left: '1.5rem', display: 'flex', gap: '0.8rem' }}>
-                <span className="badge-premium" style={{ background: 'var(--primary)' }}>{p.operation}</span>
-                {p.status !== 'Disponible' && (
-                  <span className="badge-premium" style={{ background: 'var(--accent)', color: 'white' }}>{p.status}</span>
-                )}
+              padding: '0.6rem',
+              borderRadius: '50%',
+              cursor: 'pointer',
+              color: 'var(--primary)',
+              backdropFilter: 'blur(5px)',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+            }}>
+              <Grid size={18} />
+            </button>
+          </div>
+
+          <div style={{ padding: '2rem' }}>
+            <div className="text-body-small" style={{ color: 'var(--accent)', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '0.5rem' }}>
+              {p.operation} | {p.type}
+            </div>
+            
+            <h3 
+              onClick={() => setView('property-detail', p.id)}
+              className="text-h5"
+              style={{ marginBottom: '1rem', color: 'var(--primary)', letterSpacing: '-0.02em', cursor: 'pointer' }}
+            >
+              {p.title}
+            </h3>
+            
+            <div className="text-body-medium" style={{ display: 'flex', gap: '2rem', marginBottom: '1.5rem', color: 'var(--text-muted)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <Bed size={16} strokeWidth={1.5} /> <span>{p.attributes.bedrooms} Dorm.</span>
               </div>
-              <button 
-                onClick={(e) => { e.stopPropagation(); setSelectedProp(p); }}
-                style={{ 
-                  position: 'absolute', bottom: '1.5rem', right: '1.5rem', 
-                  background: 'rgba(255,255,255,0.9)', border: 'none', 
-                  width: '45px', height: '45px', borderRadius: '50%', 
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  cursor: 'pointer', boxShadow: '0 10px 20px rgba(0,0,0,0.2)',
-                  transition: 'transform 0.3s ease'
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <Bath size={16} strokeWidth={1.5} /> <span>{p.attributes.baths} Baños</span>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', paddingTop: '1.5rem', borderTop: '1px solid var(--border)' }}>
+              <div className="text-h4" style={{ color: 'var(--primary)' }}>
+                <span className="text-body-small" style={{ marginRight: '5px' }}>USD</span>
+                {p.price_data.amount.toLocaleString()}
+              </div>
+              <button className="text-button" style={{ 
+                  background: 'transparent', border: 'none', color: 'var(--accent)', 
+                  display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer',
+                  borderBottom: '2px solid transparent', paddingBottom: '2px', transition: 'var(--transition)'
                 }}
-                onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
-                onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                onMouseOver={(e) => e.currentTarget.style.borderBottom = '2px solid var(--accent)'} 
+                onClick={() => setView('property-detail', p.id)}
               >
-                <MapPin size={20} color="var(--primary)" />
+                Ver Detalles <ArrowRight size={14} />
               </button>
             </div>
+          </div>
+        </motion.div>
+      ))}
 
-            <div style={{ padding: '0 0.5rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-muted)', fontSize: '0.8rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '0.8rem' }}>
-                <MapPin size={14} color="var(--accent)" />
-                {p.location.neighborhood}, {p.location.city}
-              </div>
-              <h3 
-                onClick={() => setView('property-detail', p.id)}
-                style={{ fontSize: '1.5rem', marginBottom: '1rem', color: 'var(--primary)', letterSpacing: '-0.02em', cursor: 'pointer' }}
-              >
-                {p.title}
-              </h3>
-              
-              <div style={{ display: 'flex', gap: '1.5rem', marginBottom: '2rem', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)', padding: '1rem 0' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-muted)', fontSize: '0.9rem', fontWeight: 600 }}>
-                  <BedDouble size={18} color="var(--accent)"/> {p.attributes.rooms}
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-muted)', fontSize: '0.9rem', fontWeight: 600 }}>
-                  <Bath size={18} color="var(--accent)"/> {p.attributes.baths}
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-muted)', fontSize: '0.9rem', fontWeight: 600 }}>
-                  <Maximize size={18} color="var(--accent)"/> {p.attributes.m2}m²
-                </div>
-              </div>
-
-              <div style={{ marginTop: 'auto', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
-                <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px', paddingBottom: '0.5rem' }}>Valor</div>
-                <div style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--primary)', lineHeight: 1 }}>
-                  {p.price_data.currency} {p.price_data.amount.toLocaleString()}
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        ))}
-      </AnimatePresence>
+      {isFiltered && displayProps.length > 0 && (
+        <div style={{ textAlign: 'center', marginTop: '2rem' }}>
+          <button className="btn-premium" style={{ background: 'transparent', border: '2px solid var(--border)', color: 'var(--primary)' }}>
+            Cargar Más Resultados
+          </button>
+        </div>
+      )}
     </div>
   );
 };
