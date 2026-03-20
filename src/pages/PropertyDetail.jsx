@@ -37,7 +37,7 @@ const PropertyDetail = ({ propertyId, setView }) => {
       <button 
         onClick={() => setView('public')}
         style={{
-          position: 'absolute', top: '2rem', left: '2rem', zIndex: 100,
+          position: 'absolute', top: '7rem', left: '2rem', zIndex: 100,
           background: 'rgba(255, 255, 255, 0.95)', border: 'none', padding: '0.8rem 1.5rem',
           borderRadius: '100px', display: 'flex', alignItems: 'center', gap: '0.5rem',
           fontWeight: 800, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '1px',
@@ -52,7 +52,7 @@ const PropertyDetail = ({ propertyId, setView }) => {
         
         {/* Tab Selector inside Gallery */}
         <div style={{ 
-          position: 'absolute', top: '2.5rem', left: '50%', transform: 'translateX(-50%)', 
+          position: 'absolute', top: '7rem', left: '50%', transform: 'translateX(-50%)', 
           zIndex: 10, display: 'flex', gap: '0.5rem', background: 'rgba(16, 24, 40, 0.6)', 
           padding: '0.5rem', borderRadius: '100px', backdropFilter: 'blur(10px)' 
         }}>
