@@ -114,7 +114,17 @@ const PropertyDetail = ({ propertyId, setView }) => {
                 <span className="text-body-small" style={{ background: 'var(--primary)', color: 'white', padding: '0.4rem 1rem', borderRadius: '0', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '2px' }}>{property.operation}</span>
                 <span className="text-body-small" style={{ background: 'rgba(197, 160, 89, 0.1)', color: 'var(--accent)', padding: '0.4rem 1rem', borderRadius: '0', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '2px' }}>{property.status}</span>
              </div>
-             <h1 className="text-h1" style={{ color: 'var(--primary)', marginBottom: '1rem' }}>{property.title}</h1>
+             <h1 style={{ 
+               color: 'var(--primary)', 
+               marginBottom: '1rem', 
+               fontSize: 'clamp(2.5rem, 4vw, 3.5rem)', 
+               lineHeight: '1.1', 
+               fontWeight: 800, 
+               letterSpacing: '-0.03em',
+               fontFamily: 'Montserrat, sans-serif'
+             }}>
+               {property.title}
+             </h1>
              <div className="text-body-large" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-muted)', marginBottom: '3rem' }}>
                 <MapPin size={20} color="var(--accent)" /> {property.location.neighborhood}, {property.location.city}
              </div>

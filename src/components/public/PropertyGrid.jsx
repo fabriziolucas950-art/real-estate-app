@@ -111,8 +111,16 @@ const PropertyGrid = ({ setView }) => {
             
             <h3 
               onClick={() => setView('property-detail', p.id)}
-              className="text-h5"
-              style={{ marginBottom: '1rem', color: 'var(--primary)', letterSpacing: '-0.02em', cursor: 'pointer' }}
+              style={{ 
+                fontSize: '1.4rem', 
+                lineHeight: '1.2', 
+                fontWeight: 800, 
+                marginBottom: '1rem', 
+                color: 'var(--primary)', 
+                letterSpacing: '-0.02em', 
+                cursor: 'pointer',
+                fontFamily: 'Montserrat, sans-serif'
+              }}
             >
               {p.title}
             </h3>
