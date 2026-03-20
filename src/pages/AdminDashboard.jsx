@@ -1,64 +1,114 @@
-import React from 'react';
-import { Routes, Route, Link } from 'react-router-dom';
-import { LayoutDashboard, PlusCircle, Inbox, Settings, LogOut } from 'lucide-react';
+import React, { useState } from 'react';
+import { useStore } from '../lib/mockStore';
 import InventoryManager from '../components/admin/InventoryManager';
-import PropertyForm from '../components/admin/PropertyForm';
-import LeadInbox from '../components/admin/LeadInbox';
+import NavigationManager from '../components/admin/NavigationManager';
+import { Settings, CheckCircle2 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const AdminDashboard = () => {
-  return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: '#f1f5f9' }}>
-      {/* Sidebar */}
-      <aside style={{ width: '280px', background: 'var(--primary)', color: 'white', padding: '2rem 1.5rem' }}>
-        <h2 style={{ fontSize: '1.25rem', fontWeight: '800', marginBottom: '3rem', color: 'var(--accent)' }}>ADMIN PANEL</h2>
-        
-        <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-          <Link to="/admin" className="admin-nav-link">
-            <LayoutDashboard size={20} /> Dashboard
-          </Link>
-          <Link to="/admin/add" className="admin-nav-link">
-            <PlusCircle size={20} /> Añadir Propiedad
-          </Link>
-          <Link to="/admin/leads" className="admin-nav-link">
-            <Inbox size={20} /> Consultas
-          </Link>
-          <Link to="/admin/settings" className="admin-nav-link">
-            <Settings size={20} /> Configuración
-          </Link>
-        </nav>
+  const { heroKeywords, setHeroKeywords } = useStore();
+  const [toastVisible, setToastVisible] = useState(false);
+  const [tempKeywords, setTempKeywords] = useState(heroKeywords.join(', '));
 
-        <div style={{ marginTop: 'auto', paddingTop: '2rem' }}>
-          <button style={{ background: 'transparent', color: 'rgba(255,255,255,0.6)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <LogOut size={20} /> Cerrar Sesión
+  const handleSaveHero = () => {
+    const newKeywords = tempKeywords.split(',').map(s => s.trim()).filter(s => s.length > 0);
+    setHeroKeywords(newKeywords);
+    setToastVisible(true);
+    setTimeout(() => setToastVisible(false), 3000); // hide after 3 seconds
+  };
+
+  return (
+    <div style={{ fontFamily: 'Montserrat, sans-serif' }}>
+      
+      {/* Toast Notification */}
+      <AnimatePresence>
+        {toastVisible && (
+          <motion.div 
+            initial={{ opacity: 0, y: -50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -50 }}
+            style={{
+              position: 'fixed',
+              top: '30px',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              background: '#101828', // Navy brand color
+              color: 'white',
+              padding: '1rem 2rem',
+              borderRadius: '8px',
+              fontWeight: 800,
+              fontSize: '0.9rem',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.8rem',
+              zIndex: 9999,
+              boxShadow: '0 10px 25px rgba(0, 0, 0, 0.4)',
+              border: '1px solid #c5a059' // Gold accent border
+            }}
+          >
+            <CheckCircle2 size={20} style={{ color: '#c5a059' }} /> Web actualizada con éxito
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <div style={{ marginBottom: '3rem' }}>
+        <h1 style={{ fontSize: '2.5rem', fontWeight: 900, textTransform: 'uppercase', color: 'var(--primary)', marginBottom: '0.5rem', letterSpacing: '1px' }}>
+          Command Center
+        </h1>
+        <p style={{ color: 'var(--text-muted)', fontSize: '1.1rem', fontWeight: 500 }}>
+          Gestión unificada de todo el ecosistema web.
+        </p>
+      </div>
+
+      {/* Module A: Global Settings (Hero Control) */}
+      <section className="glass-panel" style={{ padding: '2.5rem', borderRadius: 'var(--radius-lg)', marginBottom: '4rem', border: '1px solid var(--border)', background: 'white' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', marginBottom: '1.5rem' }}>
+          <Settings size={22} style={{ color: 'var(--accent)' }} />
+          <h3 style={{ fontSize: '1.1rem', margin: 0, color: 'var(--primary)', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '2px' }}>
+            Configuración del Hero (Global Settings)
+          </h3>
+        </div>
+        
+        <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'flex-end', flexWrap: 'wrap' }}>
+          <div style={{ flex: 1, minWidth: '300px' }}>
+            <label style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '0.8rem', display: 'block', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px' }}>
+              Palabras Dinámicas en Portada (separadas por comas)
+            </label>
+            <input 
+              type="text" 
+              value={tempKeywords} 
+              onChange={(e) => setTempKeywords(e.target.value)}
+              placeholder="lugar, hogar, negocio..."
+              style={{ 
+                width: '100%', padding: '1.2rem', borderRadius: '8px', border: '1px solid var(--border)', 
+                outline: 'none', fontSize: '1rem', fontFamily: 'Montserrat, sans-serif', fontWeight: 600,
+                color: 'var(--primary)', background: '#F8FAFC',
+                transition: 'border 0.2s ease'
+              }}
+              onFocus={(e) => e.target.style.borderColor = 'var(--accent)'}
+              onBlur={(e) => e.target.style.borderColor = 'var(--border)'}
+            />
+          </div>
+          <button 
+            onClick={handleSaveHero}
+            className="btn-premium btn-premium-primary" 
+            style={{ padding: '1.2rem 3rem', fontSize: '0.9rem', borderRadius: '8px' }}
+          >
+            Sincronizar Web
           </button>
         </div>
-      </aside>
+      </section>
 
-      {/* Main Content */}
-      <main style={{ flex: 1, padding: '3rem' }}>
-        <Routes>
-          <Route path="/" element={<InventoryManager />} />
-          <Route path="/add" element={<PropertyForm />} />
-          <Route path="/edit/:id" element={<PropertyForm />} />
-          <Route path="/leads" element={<LeadInbox />} />
-        </Routes>
-      </main>
+      {/* Module B: Inventory Engine */}
+      <section style={{ marginBottom: '4rem' }}>
+        <InventoryManager />
+      </section>
 
-      <style>{`
-        .admin-nav-link {
-          display: flex;
-          align-items: center;
-          gap: 0.75rem;
-          padding: 0.75rem 1rem;
-          border-radius: 0.5rem;
-          color: rgba(255,255,255,0.7);
-          transition: all 0.2s;
-        }
-        .admin-nav-link:hover {
-          background: rgba(255,255,255,0.1);
-          color: white;
-        }
-      `}</style>
+      {/* Module C: Navigation Settings */}
+      <section style={{ marginBottom: '2rem' }}>
+        <NavigationManager />
+      </section>
+
     </div>
   );
 };
