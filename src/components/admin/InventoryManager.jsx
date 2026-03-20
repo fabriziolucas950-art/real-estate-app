@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useStore } from '../../lib/mockStore';
-import { Plus, Trash2, Edit3, Save, X, Image as ImageIcon, DollarSign } from 'lucide-react';
+import { Plus, Trash2, Edit3, Save, X, Image as ImageIcon, Map, PlayCircle, CheckCircle } from 'lucide-react';
 
 const InventoryManager = () => {
-  const { properties, updatePrice, addProperty, heroKeywords, setHeroKeywords } = useStore();
+  const { properties, updatePrice, addProperty } = useStore();
   const [isAdding, setIsAdding] = useState(false);
 
   const [editingId, setEditingId] = useState(null);
@@ -15,39 +15,88 @@ const InventoryManager = () => {
     setEditingId(null);
   };
 
+  const handlePublishMock = () => {
+    setIsAdding(false);
+    alert('Propiedad guardada en el catálogo (MOCK).');
+  };
+
   if (isAdding) {
     return (
       <div className="admin-inventory animate-fade" style={{ background: 'white', padding: '3rem', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-subtle)', fontFamily: 'Montserrat, sans-serif' }}>
-        <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '3rem' }}>
+        <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '3rem', borderBottom: '1px solid var(--border)', paddingBottom: '1.5rem' }}>
           <div>
-            <h2 style={{ fontSize: '1.8rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--primary)' }}>Nueva Propiedad</h2>
-            <p style={{ color: 'var(--text-muted)', fontWeight: 500 }}>Sube el material multimedia y define los atributos estructurales.</p>
+            <h2 style={{ fontSize: '1.8rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--primary)' }}>Nueva Propiedad (Miranda Bosch System)</h2>
+            <p style={{ color: 'var(--text-muted)', fontWeight: 500 }}>Ficha técnica completa, finanzas y categorización multimedia.</p>
           </div>
-          <button onClick={() => setIsAdding(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}><X size={24} /></button>
+          <button onClick={() => setIsAdding(false)} style={{ background: 'var(--border)', border: 'none', cursor: 'pointer', color: 'var(--primary)', width: '40px', height: '40px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <X size={20} />
+          </button>
         </header>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '3rem' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-            <label style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px' }}>Título y Ubicación</label>
-            <input type="text" placeholder="Ej: Quinta a Estrenar..." style={{ padding: '1rem', borderRadius: '8px', border: '1px solid var(--border)', outline: 'none', fontSize: '1rem', fontFamily: 'Montserrat, sans-serif' }} />
-            <input type="text" placeholder="Precio (USD)" style={{ padding: '1rem', borderRadius: '8px', border: '1px solid var(--border)', outline: 'none', fontSize: '1rem', fontFamily: 'Montserrat, sans-serif' }} />
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '3rem' }}>
+          
+          {/* IDENTIFICATION & FINANCIAL */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.5fr) 1fr', gap: '3rem' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+              <SectionTitle title="Datos Básicos" />
+              <FormInput label="Título de la Publicación" placeholder="Ej: Residencia de Autor Premium..." />
+              <FormInput label="Dirección / Barrio" placeholder="Ej: San Ignacio, Junín" />
+              <div style={{ display: 'flex', gap: '1rem' }}>
+                 <FormSelect label="Operación" options={['Venta', 'Alquiler']} />
+                 <FormSelect label="Tipo" options={['Casa', 'Departamento', 'Lote', 'Local', 'Quinta']} />
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+              <SectionTitle title="Finanzas & Gastos Mensuales" />
+              <FormInput label="Precio Base (USD / ARS)" placeholder="Ej: 320000" type="number" />
+              <div style={{ display: 'flex', gap: '1rem' }}>
+                 <FormInput label="Expensas Mensuales" placeholder="Ej: 8000" type="number" />
+                 <FormInput label="Impuestos (ARBA, Mun)" placeholder="Ej: 15000" type="number" />
+              </div>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', cursor: 'pointer', marginTop: '0.5rem' }}>
+                <input type="checkbox" style={{ width: '18px', height: '18px', accentColor: 'var(--accent)' }} />
+                <span style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--primary)' }}>Apto Crédito Bancario</span>
+              </label>
+            </div>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            <label style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px' }}>Media (Drag & Drop)</label>
-            <div style={{
-              border: '2px dashed var(--accent)', borderRadius: '12px', padding: '4rem 2rem', 
-              textAlign: 'center', background: 'rgba(197, 160, 89, 0.05)', cursor: 'pointer',
-              transition: 'background 0.3s'
-            }} onMouseOver={(e) => e.currentTarget.style.background = 'rgba(197, 160, 89, 0.1)'} onMouseOut={(e) => e.currentTarget.style.background = 'rgba(197, 160, 89, 0.05)'}>
-              <ImageIcon size={48} color="var(--accent)" style={{ margin: '0 auto 1rem' }} />
-              <div style={{ fontWeight: 800, color: 'var(--primary)', marginBottom: '0.5rem', fontSize: '1.1rem' }}>Arrastra tus fotos aquí</div>
-              <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>o haz click para explorar. Soporta JPG, PNG, WEBP.</div>
+          <hr style={{ border: 'none', borderTop: '1px dashed var(--border)' }} />
+
+          {/* TECHNICAL SPEC SHEET */}
+          <div>
+            <SectionTitle title="Ficha Técnica & Edificio" />
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1.5rem' }}>
+              <FormInput label="Superficie Total (m²)" placeholder="Ej: 120" type="number" />
+              <FormInput label="Superficie Cub. (m²)" placeholder="Ej: 90" type="number" />
+              <FormInput label="Ambientes Totales" placeholder="Ej: 4" type="number" />
+              <FormInput label="Dormitorios" placeholder="Ej: 3" type="number" />
+              <FormInput label="Baños" placeholder="Ej: 2" type="number" />
+              <FormInput label="Antigüedad (años)" placeholder="Ej: 5 (0 = A estrenar)" type="number" />
+              <FormSelect label="Luminosidad" options={['Muy Luminoso', 'Normal', 'Bajo']} />
+              <FormSelect label="Orientación" options={['Norte', 'Sur', 'Este', 'Oeste', 'Noreste', 'Noroeste', 'Sureste', 'Suroeste']} />
+              <FormSelect label="Estado Actual" options={['Excelente', 'Muy Bueno', 'Bueno', 'A Refaccionar', 'Nuevo']} />
             </div>
-            <button className="btn-premium btn-premium-primary" onClick={() => setIsAdding(false)} style={{ marginTop: '2rem', padding: '1.2rem', fontSize: '1rem' }}>
-              <Save size={18} /> Publicar Propiedad
+          </div>
+
+          <hr style={{ border: 'none', borderTop: '1px dashed var(--border)' }} />
+
+          {/* MEDIA UPLOADER */}
+          <div>
+            <SectionTitle title="Categorización Multimedia" />
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.5rem' }}>
+               <MediaDropzone title="Renders & Fotos" icon={<ImageIcon size={30} />} desc="JPG, PNG. Max 5MB." />
+               <MediaDropzone title="Planos Arquitectónicos" icon={<Map size={30} />} desc="PDF, JPG. Escala legible." />
+               <MediaDropzone title="Tour Virtual / Video" icon={<PlayCircle size={30} />} desc="MP4 o Link de YouTube." />
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '2rem' }}>
+            <button className="btn-premium btn-premium-primary" onClick={handlePublishMock} style={{ padding: '1.2rem 3rem', fontSize: '1rem', borderRadius: '8px' }}>
+              <Save size={18} /> Publicar Ficha de Autor
             </button>
           </div>
+          
         </div>
       </div>
     );
@@ -61,12 +110,9 @@ const InventoryManager = () => {
           <p style={{ color: 'var(--text-muted)', fontWeight: 500 }}>Control total de tus publicaciones en tiempo real.</p>
         </div>
         <button className="btn-premium btn-premium-primary" onClick={() => setIsAdding(true)} style={{ padding: '0.8rem 2rem', fontSize: '0.75rem' }}>
-          <Plus size={18} /> Nueva Propiedad
+          <Plus size={18} /> Nueva Ficha de Propiedad
         </button>
       </header>
-
-// Hero config moved to AdminDashboard
-
 
       {/* Table-based CRUD Engine */}
       <div className="glass-panel" style={{ overflow: 'hidden', borderRadius: 'var(--radius-lg)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-subtle)' }}>
@@ -74,34 +120,37 @@ const InventoryManager = () => {
           <thead>
             <tr style={{ background: 'var(--primary)', color: 'white' }}>
               <th style={{ padding: '1.5rem', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '2px', fontWeight: 700 }}>Propiedad</th>
-              <th style={{ padding: '1.5rem', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '2px', fontWeight: 700 }}>Estado</th>
-              <th style={{ padding: '1.5rem', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '2px', fontWeight: 700 }}>Precio (USD)</th>
+              <th style={{ padding: '1.5rem', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '2px', fontWeight: 700 }}>Estado / Info</th>
+              <th style={{ padding: '1.5rem', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '2px', fontWeight: 700 }}>Finanzas (USD)</th>
               <th style={{ padding: '1.5rem', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '2px', fontWeight: 700 }}>Acciones</th>
             </tr>
           </thead>
           <tbody>
-            {properties.map(p => (
+            {properties.map(p => {
+              const mainFoto = p.media.find(m => m.type === 'Foto')?.url || p.media[0]?.url;
+              return (
               <tr key={p.id} style={{ borderBottom: '1px solid var(--border)', background: 'white' }}>
                 <td style={{ padding: '1.5rem', display: 'flex', gap: '1.2rem', alignItems: 'center' }}>
-                  <img src={p.media[0]} style={{ width: '60px', height: '60px', borderRadius: 'var(--radius-sm)', objectFit: 'cover', border: '1px solid var(--border)' }} alt="" />
+                  <img src={mainFoto} style={{ width: '60px', height: '60px', borderRadius: 'var(--radius-sm)', objectFit: 'cover', border: '1px solid var(--border)' }} alt="" />
                   <div>
-                    <div style={{ fontWeight: 800, fontSize: '0.95rem' }}>{p.title}</div>
-                    <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 500 }}>{p.location.neighborhood}</div>
+                    <div style={{ fontWeight: 800, fontSize: '0.95rem', color: 'var(--primary)' }}>{p.title}</div>
+                    <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 500 }}>{p.location.neighborhood} • {p.attributes.rooms || 0} AMB • {p.attributes.m2 || 0}m²</div>
                   </div>
                 </td>
                 <td style={{ padding: '1.5rem' }}>
-                   <span style={{ 
-                     padding: '0.4rem 1rem', 
-                     background: p.status === 'Disponible' ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)', 
-                     color: p.status === 'Disponible' ? '#16a34a' : '#dc2626',
-                     borderRadius: '100px',
-                     fontSize: '0.7rem',
-                     fontWeight: 800,
-                     textTransform: 'uppercase',
-                     letterSpacing: '1px'
-                   }}>
-                     {p.status}
-                   </span>
+                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', alignItems: 'flex-start' }}>
+                     <span style={{ 
+                       padding: '0.3rem 0.8rem', 
+                       background: p.status === 'Disponible' ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)', 
+                       color: p.status === 'Disponible' ? '#16a34a' : '#dc2626',
+                       borderRadius: '100px', fontSize: '0.65rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px'
+                     }}>
+                       {p.status}
+                     </span>
+                     {p.price_data.apto_credito && (
+                       <span style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.7rem', color: 'var(--accent)', fontWeight: 700 }}><CheckCircle size={12} /> Apto Crédito</span>
+                     )}
+                   </div>
                 </td>
                 <td style={{ padding: '1.5rem' }}>
                   {editingId === p.id ? (
@@ -139,12 +188,49 @@ const InventoryManager = () => {
                    </button>
                 </td>
               </tr>
-            ))}
+            )})}
           </tbody>
         </table>
       </div>
     </div>
   );
 };
+
+// --- MOCK COMPONENTS PARA EL FORMULARIO PREMIUM ---
+
+const SectionTitle = ({ title }) => (
+  <h3 style={{ fontSize: '0.85rem', color: 'var(--accent)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '0.5rem' }}>{title}</h3>
+);
+
+const FormInput = ({ label, placeholder, type = "text" }) => (
+  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', flex: 1 }}>
+     <label style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px' }}>{label}</label>
+     <input type={type} placeholder={placeholder} style={{ width: '100%', padding: '0.9rem 1.2rem', borderRadius: '8px', border: '1px solid var(--border)', outline: 'none', fontSize: '0.95rem', fontFamily: 'Montserrat, sans-serif', color: 'var(--primary)', background: '#F8F9FA' }} />
+  </div>
+);
+
+const FormSelect = ({ label, options }) => (
+  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', flex: 1 }}>
+     <label style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px' }}>{label}</label>
+     <select style={{ width: '100%', padding: '0.9rem 1.2rem', borderRadius: '8px', border: '1px solid var(--border)', outline: 'none', fontSize: '0.95rem', fontFamily: 'Montserrat, sans-serif', color: 'var(--primary)', background: '#F8F9FA', cursor: 'pointer' }}>
+        {options.map(o => <option key={o} value={o}>{o}</option>)}
+     </select>
+  </div>
+);
+
+const MediaDropzone = ({ title, icon, desc }) => (
+  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+    <label style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px' }}>{title}</label>
+    <div style={{
+      border: '2px dashed var(--border)', borderRadius: '12px', padding: '3rem 1rem', 
+      textAlign: 'center', background: 'transparent', cursor: 'pointer',
+      transition: 'all 0.3s'
+    }} onMouseOver={(e) => { e.currentTarget.style.borderColor = 'var(--accent)'; e.currentTarget.style.background = 'rgba(197, 160, 89, 0.05)' }} onMouseOut={(e) => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.background = 'transparent'; }}>
+      <div style={{ color: 'var(--text-muted)', marginBottom: '1rem' }}>{icon}</div>
+      <div style={{ fontWeight: 800, color: 'var(--primary)', marginBottom: '0.2rem', fontSize: '0.9rem' }}>Arrastra tus {title.toLowerCase()}</div>
+      <div style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>{desc}</div>
+    </div>
+  </div>
+);
 
 export default InventoryManager;
