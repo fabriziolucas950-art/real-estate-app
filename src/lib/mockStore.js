@@ -1,82 +1,102 @@
 import { create } from 'zustand';
 
-// ANTIGRAVITY-KIT: REACTIVE ENGINE
+// Simulated DB of properties
+const mockProperties = [
+  {
+    id: '1',
+    title: 'Quinta a Estrenar a solo 5 minutos del Centro',
+    operation: 'Venta',
+    status: 'Destacado',
+    price_data: { amount: 185000, currency: 'USD', apto_credito: true, expenses: 15000, impuestos: 5000 },
+    location: { city: 'Junín', neighborhood: 'Cerrado Junin', lat: -34.582, lng: -60.945 },
+    attributes: { rooms: 3, bedrooms: 3, baths: 3, m2: 170, antiguedad: 0, orientacion: 'Norte', luminosidad: 'Muy Luminoso', estado: 'Excelente', amenities: ['Pileta', 'Parrilla', 'Cochera Doble', 'Seguridad 24hs'] },
+    media: [
+      { type: 'Foto', url: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80' },
+      { type: 'Foto', url: 'https://images.unsplash.com/photo-1600607687931-ce8e001c80c2?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80' },
+      { type: 'Plano', url: 'https://images.unsplash.com/photo-1600607687644-b7156942ce8e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80' } // Placeholder para plano
+    ]
+  },
+  {
+    id: '2',
+    title: 'Departamento Moderno Centro',
+    operation: 'Alquiler',
+    status: 'Disponible',
+    price_data: { amount: 450, currency: 'USD', apto_credito: false, expenses: 25000, impuestos: 3000 },
+    location: { city: 'Junín', neighborhood: 'Centro', lat: -34.595, lng: -60.948 },
+    attributes: { rooms: 2, bedrooms: 1, baths: 1, m2: 55, antiguedad: 5, orientacion: 'Este', luminosidad: 'Normal', estado: 'Excelente', amenities: ['Balcón', 'Gimnasio'] },
+    media: [
+      { type: 'Foto', url: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80' }
+    ]
+  },
+  {
+    id: '3',
+    title: 'Dúplex Minimalista',
+    operation: 'Venta',
+    status: 'Disponible',
+    price_data: { amount: 120000, currency: 'USD', apto_credito: true, expenses: 5000, impuestos: 2000 },
+    location: { city: 'Junín', neighborhood: 'Villa Belgrano', lat: -34.600, lng: -60.950 },
+    attributes: { rooms: 3, bedrooms: 2, baths: 2, m2: 90, antiguedad: 2, orientacion: 'Sur', luminosidad: 'Muy Luminoso', estado: 'Nuevo', amenities: ['Patio', 'Parrilla'] },
+    media: [
+      { type: 'Foto', url: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80' }
+    ]
+  },
+  {
+    id: '4',
+    title: 'Lote en Barrio Privado',
+    operation: 'Venta',
+    status: 'Destacado',
+    price_data: { amount: 75000, currency: 'USD', apto_credito: false, expenses: 10000, impuestos: 1500 },
+    location: { city: 'Junín', neighborhood: 'Costa Verde', lat: -34.610, lng: -60.920 },
+    attributes: { rooms: 0, bedrooms: 0, baths: 0, m2: 800, antiguedad: 0, orientacion: null, luminosidad: null, estado: null, amenities: ['Seguridad 24hs', 'Club House'] },
+    media: [
+      { type: 'Foto', url: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80' }
+    ]
+  },
+  {
+    id: '5',
+    title: 'Casa Clásica Reciclada',
+    operation: 'Venta',
+    status: 'Disponible',
+    price_data: { amount: 150000, currency: 'USD', apto_credito: true, expenses: 0, impuestos: 4000 },
+    location: { city: 'Junín', neighborhood: 'Pueblo Nuevo', lat: -34.590, lng: -60.960 },
+    attributes: { rooms: 4, bedrooms: 3, baths: 2, m2: 140, antiguedad: 20, orientacion: 'Oeste', luminosidad: 'Normal', estado: 'A refaccionar', amenities: ['Garage', 'Jardín'] },
+    media: [
+      { type: 'Foto', url: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80' }
+    ]
+  },
+  {
+    id: '6',
+    title: 'Local Comercial Céntrico',
+    operation: 'Alquiler',
+    status: 'Disponible',
+    price_data: { amount: 800, currency: 'USD', apto_credito: false, expenses: 12000, impuestos: 8000 },
+    location: { city: 'Junín', neighborhood: 'Centro', lat: -34.594, lng: -60.947 },
+    attributes: { rooms: 1, bedrooms: 0, baths: 1, m2: 120, antiguedad: 10, orientacion: 'Este', luminosidad: 'Bajo', estado: 'Excelente', amenities: ['Vidriera', 'Cortina Metálica'] },
+    media: [
+      { type: 'Foto', url: 'https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80' }
+    ]
+  }
+];
+
 export const useStore = create((set, get) => ({
-  properties: [
-    {
-      id: '1',
-      title: 'Quinta a Estrenar a solo 5 minutos del Centro',
-      operation: 'Venta',
-      price_data: { amount: 185000, currency: 'USD', expenses: 0, impuestos: 15000, apto_credito: true },
-      media: [
-        { type: 'Foto', url: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&q=80&w=1200' }, 
-        { type: 'Foto', url: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80&w=1200' }, 
-        { type: 'Plano', url: 'https://images.unsplash.com/photo-1600607687931-cebf1daef506?auto=format&fit=crop&q=80&w=1200' },
-        { type: 'Video', url: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80&w=1200'}
-      ],
-      attributes: { rooms: 5, m2: 170, bedrooms: 3, baths: 3, amenities: ['Piscina', 'Cochera x2'], antiguedad: 0, luminosidad: 'Muy Luminoso', orientacion: 'Norte', estado: 'Excelente' },
-      location: { address: 'Ruta 7 Km 260', neighborhood: 'Cerrado Junín', city: 'Junín', lat: -34.585, lng: -60.948 },
-      status: 'Disponible'
-    },
-    {
-      id: '2',
-      title: 'Departamento Moderno Centro',
-      operation: 'Alquiler',
-      price_data: { amount: 450, currency: 'USD', expenses: 8000, impuestos: 3000, apto_credito: false },
-      media: [{ type: 'Foto', url: 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=1200' }],
-      attributes: { rooms: 2, m2: 55, bedrooms: 1, baths: 1, amenities: ['Balcón', 'Sum'], antiguedad: 10, luminosidad: 'Normal', orientacion: 'Este', estado: 'Excelente' },
-      location: { address: 'Roque Sáenz Peña 150', neighborhood: 'Centro', city: 'Junín', lat: -34.593, lng: -60.947 },
-      status: 'Disponible'
-    },
-    {
-      id: '3',
-      title: 'Residencia de Lujo San Ignacio',
-      operation: 'Venta',
-      price_data: { amount: 320000, currency: 'USD', expenses: 20000, impuestos: 45000, apto_credito: true },
-      media: [{ type: 'Foto', url: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80&w=1200' }],
-      attributes: { rooms: 6, m2: 600, bedrooms: 4, baths: 3, amenities: ['Gym', 'Piscina'], antiguedad: 2, luminosidad: 'Muy Luminoso', orientacion: 'Noreste', estado: 'Nuevo' },
-      location: { address: 'Libertad 1200', neighborhood: 'Pueblo Nuevo', city: 'Junín', lat: -34.591, lng: -60.952 },
-      status: 'Disponible'
-    },
-    {
-      id: '4',
-      title: 'Lote en Club de Campo',
-      operation: 'Venta',
-      price_data: { amount: 75000, currency: 'USD', expenses: 5000, impuestos: 12000, apto_credito: true },
-      media: [{ type: 'Foto', url: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&q=80&w=1200' }],
-      attributes: { rooms: 0, m2: 800, bedrooms: 0, baths: 0, amenities: ['Seguridad'], antiguedad: 0, luminosidad: 'Muy Luminoso', orientacion: 'Oeste', estado: 'Excelente' },
-      location: { address: 'Acceso Pergamino', neighborhood: 'La Pradera', city: 'Junín', lat: -34.610, lng: -60.920 },
-      status: 'Disponible'
-    },
-    {
-      id: '5',
-      title: 'Local Comercial Céntrico',
-      operation: 'Alquiler',
-      price_data: { amount: 800, currency: 'USD', expenses: 12000, impuestos: 6000, apto_credito: false },
-      media: [{ type: 'Foto', url: 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=1200' }],
-      attributes: { rooms: 3, m2: 120, bedrooms: 0, baths: 2, amenities: ['Apto Profesional'], antiguedad: 40, luminosidad: 'Bajo', orientacion: 'Sur', estado: 'A refaccionar' },
-      location: { address: 'Rivadavia 100', neighborhood: 'Centro', city: 'Junín', lat: -34.595, lng: -60.945 },
-      status: 'Disponible'
-    },
-    {
-      id: '6',
-      title: 'Dúplex Minimalista',
-      operation: 'Venta',
-      price_data: { amount: 110000, currency: 'USD', expenses: 4000, impuestos: 8500, apto_credito: true },
-      media: [{ type: 'Foto', url: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80&w=1200' }],
-      attributes: { rooms: 3, m2: 90, bedrooms: 2, baths: 2, amenities: ['Patio', 'Parrilla'], antiguedad: 5, luminosidad: 'Muy Luminoso', orientacion: 'Norte', estado: 'Excelente' },
-      location: { address: 'Primera Junta 500', neighborhood: 'Villa Belgrano', city: 'Junín', lat: -34.580, lng: -60.950 },
-      status: 'Disponible'
-    }
-  ],
-  
-  // HERO SETTINGS: DYNAMIC TEXT ROTATOR
-  heroKeywords: ['hogar', 'departamento', 'proyecto'],
-  setHeroKeywords: (keywords) => set({ heroKeywords: keywords }),
-  
+  properties: mockProperties,
+  filteredProperties: mockProperties, // initialized with all
+  detailedPropertyId: null,
+
+  setDetailedPropertyId: (id) => set({ detailedPropertyId: id }),
+
+  // UI State Configs
   footerSettings: {
-    featuredCities: ['Junín'],
-    featuredRentCategories: ['Departamento', 'Casa'],
+    address: 'Av. San Martín 123',
+    city: 'Junín',
+    province: 'Buenos Aires',
+    phone: '+54 9 236 400-0000',
+    email: 'contacto@balsells-chilano.com',
+    social: {
+      instagram: 'https://instagram.com/balsells-chilano',
+      facebook: 'https://facebook.com/balsells-chilano',
+      linkedin: 'https://linkedin.com/company/balsells-chilano'
+    },
     featuredSaleCategories: ['Casa', 'Lote'],
     termsLink: '/legal/terminos',
     privacyLink: '/legal/privacidad'
@@ -134,7 +154,7 @@ export const useStore = create((set, get) => ({
     mapConfig: { ...state.mapConfig, ...config }
   })),
 
-  getFilteredProperties: () => {
+  getFilteredProperties: (ignoreMapBounds = false) => {
     const { properties, filters, mapConfig } = get();
     return properties.filter(p => {
       if (filters.location && !p.location.city.toLowerCase().includes(filters.location.toLowerCase()) && 
@@ -158,7 +178,7 @@ export const useStore = create((set, get) => ({
         if (missing) return false;
       }
 
-      if (mapConfig.viewBound && mapConfig.autoUpdate) {
+      if (!ignoreMapBounds && mapConfig.viewBound && mapConfig.autoUpdate) {
         const { lat, lng } = p.location;
         const [[s, w], [n, e]] = mapConfig.viewBound;
         if (lat < s || lat > n || lng < w || lng > e) return false;
