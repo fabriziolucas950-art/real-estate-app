@@ -114,14 +114,11 @@ const PropertyDetail = ({ propertyId, setView }) => {
                 <span className="text-body-small" style={{ background: 'var(--primary)', color: 'white', padding: '0.4rem 1rem', borderRadius: '0', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '2px' }}>{property.operation}</span>
                 <span className="text-body-small" style={{ background: 'rgba(197, 160, 89, 0.1)', color: 'var(--accent)', padding: '0.4rem 1rem', borderRadius: '0', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '2px' }}>{property.status}</span>
              </div>
-             <h1 style={{ 
+             <h1 className="text-h2" style={{ 
                color: 'var(--primary)', 
                marginBottom: '1rem', 
-               fontSize: 'clamp(2.5rem, 4vw, 3.5rem)', 
-               lineHeight: '1.1', 
                fontWeight: 800, 
-               letterSpacing: '-0.03em',
-               fontFamily: 'Montserrat, sans-serif'
+               lineHeight: '1.1'
              }}>
                {property.title}
              </h1>
