@@ -66,7 +66,7 @@ export const useStore = create((set, get) => ({
   ],
   
   // HERO SETTINGS: DYNAMIC TEXT ROTATOR
-  heroKeywords: ['Quinta', 'lugar', 'hogar', 'departamento', 'proyecto'],
+  heroKeywords: ['hogar', 'departamento', 'proyecto'],
   setHeroKeywords: (keywords) => set({ heroKeywords: keywords }),
   
   footerSettings: {
