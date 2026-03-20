@@ -1,148 +1,126 @@
 import React, { useState } from 'react';
 import { useStore } from '../../lib/mockStore';
-import { Maximize, Bath, Bed, MapPin, ArrowRight } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import { MapPin, BedDouble, Bath, Maximize } from 'lucide-react';
 import MapsModal from './MapsModal';
 
 const PropertyGrid = ({ setView, limit }) => {
-  const properties = useStore((state) => state.properties);
-  const filters = useStore((state) => state.filters);
-  const getFilteredProperties = useStore((state) => state.getFilteredProperties);
+  // Using the new filtered getter instead of raw properties
+  const allFilteredProperties = useStore(state => state.getFilteredProperties());
+  const filters = useStore(state => state.filters); // added to listen to changes
+  
   const [selectedProp, setSelectedProp] = useState(null);
 
-  let displayProps = getFilteredProperties();
-  const isEmpty = displayProps.length === 0;
+  // Apply limit if provided (e.g for Home page)
+  const properties = limit ? allFilteredProperties.slice(0, limit) : allFilteredProperties;
 
-  if (isEmpty) {
-    displayProps = properties.slice(0, 3);
-  } else if (limit) {
-    displayProps = displayProps.slice(0, limit);
+  if (properties.length === 0) {
+    // Empty State Handling
+    return (
+      <div style={{ textAlign: 'center', padding: '6rem 2rem', background: '#F8F9FA', borderRadius: 'var(--radius-lg)', border: '1px dashed var(--border)' }}>
+        <h3 style={{ fontSize: '2rem', color: 'var(--primary)', fontWeight: 800, marginBottom: '1rem', letterSpacing: '-1px' }}>No encontramos propiedades exactas.</h3>
+        <p style={{ color: 'var(--text-muted)', fontSize: '1.2rem', marginBottom: '2rem' }}>Prueba ajustando los filtros o revisa estas recomendaciones destacadas:</p>
+        <button 
+          onClick={() => useStore.getState().setFilters({ location: '', operation: 'Todos', propertyType: 'Todos', bedrooms: 'Todos', bathrooms: 'Todos', amenities: [], priceRange: [0, 1000000] })}
+          className="btn-premium" style={{ background: 'white', color: 'var(--primary)' }}
+        >
+          Limpiar todos los filtros
+        </button>
+      </div>
+    );
   }
 
   return (
-    <div className="property-grid-container" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '4rem' }}>
+    <div className="property-grid-container" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '3rem' }}>
       <MapsModal 
         isOpen={!!selectedProp} 
         onClose={() => setSelectedProp(null)} 
-        address={selectedProp?.location.address}
-        city={selectedProp?.location.city}
+        property={selectedProp} 
       />
 
-      {isEmpty && (
-        <div style={{ gridColumn: '1 / -1', background: 'rgba(197, 160, 89, 0.05)', padding: '3rem', borderRadius: 'var(--radius-lg)', textAlign: 'center', border: '1px solid rgba(197, 160, 89, 0.2)', marginBottom: '1rem' }}>
-          <h3 style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--primary)', marginBottom: '0.5rem', letterSpacing: '-0.5px' }}>
-            No encontramos propiedades con esos filtros exactos.
-          </h3>
-          <p style={{ color: 'var(--text-muted)', fontSize: '1rem' }}>Pero estas opciones destacadas te pueden interesar:</p>
-        </div>
-      )}
-
-      {displayProps.map((p, idx) => (
-        <motion.article 
-          key={p.id}
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: idx * 0.1, duration: 0.8 }}
-          className="property-card"
-          style={{ 
-            display: 'flex', 
-            flexDirection: 'column',
-            border: 'none',
-            background: 'transparent'
-          }}
-        >
-          <div style={{ position: 'relative', height: '500px', overflow: 'hidden', marginBottom: '1.5rem' }}>
-            <img 
-              onClick={() => setView('property-detail', p.id)}
-              src={p.media[0]} 
-              alt={p.title} 
-              style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'var(--transition)', cursor: 'pointer' }} 
-              className="card-img"
-            />
-            <div style={{ 
-              position: 'absolute', 
-              top: '1.5rem', 
-              left: '1.5rem', 
-              padding: '0.5rem 1.2rem', 
-              background: 'var(--white)', 
-              color: 'var(--primary)', 
-              fontSize: '0.7rem', 
-              fontWeight: 800,
-              textTransform: 'uppercase',
-              letterSpacing: '1px'
-            }}>
-              {p.operation}
-            </div>
-            
-            <button 
-              onClick={(e) => { e.stopPropagation(); setSelectedProp(p); }}
-              style={{
-                position: 'absolute',
-                bottom: '1.5rem',
-                right: '1.5rem',
-                width: '45px',
-                height: '45px',
-                borderRadius: '50%',
-                background: 'var(--white)',
-                border: 'none',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-                boxShadow: 'var(--shadow-premium)',
-                color: 'var(--primary)'
-              }}
-            >
-              <MapPin size={18} />
-            </button>
-          </div>
-
-          <div style={{ padding: '0.5rem 0' }}>
-            <div style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--accent)', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '0.5rem' }}>
-              {p.location.neighborhood} • {p.attributes.rooms} AMB.
-            </div>
-            <h3 
-              onClick={() => setView('property-detail', p.id)}
-              style={{ fontSize: '2rem', marginBottom: '1rem', color: 'var(--primary)', letterSpacing: '-0.02em', cursor: 'pointer' }}
-            >
-              {p.title}
-            </h3>
-            
-            <div style={{ display: 'flex', gap: '2rem', marginBottom: '1.5rem', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <Bed size={16} strokeWidth={1.5} /> <span>{p.attributes.bedrooms} Dorm.</span>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <Maximize size={16} strokeWidth={1.5} /> <span>{p.attributes.m2} m² cubiertos</span>
-              </div>
-            </div>
-
-            <div style={{ display: 'flex', justify-content: 'space-between', alignItems: 'baseline', marginTop: '1.5rem' }}>
-              <div style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--primary)' }}>
-                <span style={{ fontSize: '0.9rem', marginRight: '5px', fontWeight: 400 }}>USD</span>
-                {p.price_data.amount.toLocaleString()}
+      <AnimatePresence>
+        {properties.map((p, i) => (
+          <motion.div 
+            key={p.id}
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            transition={{ duration: 0.6, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] }}
+            className="property-card glass-panel"
+            style={{ 
+              display: 'flex', 
+              flexDirection: 'column',
+              border: 'none',
+              background: 'transparent'
+            }}
+          >
+            <div style={{ position: 'relative', height: '350px', overflow: 'hidden', marginBottom: '1.2rem', borderRadius: '16px' }}>
+              <img 
+                onClick={() => setView('property-detail', p.id)}
+                src={p.media[0]} 
+                alt={p.title}
+                style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.8s ease', cursor: 'pointer' }}
+                onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
+                onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                loading="lazy"
+              />
+              <div style={{ position: 'absolute', top: '1.5rem', left: '1.5rem', display: 'flex', gap: '0.8rem' }}>
+                <span className="badge-premium" style={{ background: 'var(--primary)' }}>{p.operation}</span>
+                {p.status !== 'Disponible' && (
+                  <span className="badge-premium" style={{ background: 'var(--accent)', color: 'white' }}>{p.status}</span>
+                )}
               </div>
               <button 
-                onClick={() => setView('property-detail', p.id)}
+                onClick={(e) => { e.stopPropagation(); setSelectedProp(p); }}
                 style={{ 
-                  background: 'none', border: 'none', color: 'var(--primary)', 
-                  fontWeight: 800, textTransform: 'uppercase', fontSize: '0.75rem', 
-                  letterSpacing: '1px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem'
+                  position: 'absolute', bottom: '1.5rem', right: '1.5rem', 
+                  background: 'rgba(255,255,255,0.9)', border: 'none', 
+                  width: '45px', height: '45px', borderRadius: '50%', 
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  cursor: 'pointer', boxShadow: '0 10px 20px rgba(0,0,0,0.2)',
+                  transition: 'transform 0.3s ease'
                 }}
+                onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
+                onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
               >
-                Ver Detalles <ArrowRight size={14} />
+                <MapPin size={20} color="var(--primary)" />
               </button>
             </div>
-          </div>
-        </motion.article>
-      ))}
 
-      <style>{`
-        .property-card:hover .card-img {
-          transform: scale(1.05);
-        }
-      `}</style>
+            <div style={{ padding: '0 0.5rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-muted)', fontSize: '0.8rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '0.8rem' }}>
+                <MapPin size={14} color="var(--accent)" />
+                {p.location.neighborhood}, {p.location.city}
+              </div>
+              <h3 
+                onClick={() => setView('property-detail', p.id)}
+                style={{ fontSize: '1.5rem', marginBottom: '1rem', color: 'var(--primary)', letterSpacing: '-0.02em', cursor: 'pointer' }}
+              >
+                {p.title}
+              </h3>
+              
+              <div style={{ display: 'flex', gap: '1.5rem', marginBottom: '2rem', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)', padding: '1rem 0' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-muted)', fontSize: '0.9rem', fontWeight: 600 }}>
+                  <BedDouble size={18} color="var(--accent)"/> {p.attributes.rooms}
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-muted)', fontSize: '0.9rem', fontWeight: 600 }}>
+                  <Bath size={18} color="var(--accent)"/> {p.attributes.baths}
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-muted)', fontSize: '0.9rem', fontWeight: 600 }}>
+                  <Maximize size={18} color="var(--accent)"/> {p.attributes.m2}m²
+                </div>
+              </div>
+
+              <div style={{ marginTop: 'auto', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+                <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px', paddingBottom: '0.5rem' }}>Valor</div>
+                <div style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--primary)', lineHeight: 1 }}>
+                  {p.price_data.currency} {p.price_data.amount.toLocaleString()}
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        ))}
+      </AnimatePresence>
     </div>
   );
 };
