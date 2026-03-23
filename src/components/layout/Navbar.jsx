@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { Menu, X } from 'lucide-react';
 
 const Navbar = ({ setView, currentView }) => {
   const [scrolled, setScrolled] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -29,7 +31,36 @@ const Navbar = ({ setView, currentView }) => {
   const isTransparent = isDetail && !scrolled;
 
   return (
-    <nav className="glass-panel" style={{
+    <>
+      {/* Mobile Overlay Menu */}
+      <div className={`mobile-menu-overlay ${isMobileMenuOpen ? 'open' : ''}`}>
+        <div style={{ position: 'absolute', top: '1.5rem', right: '1.5rem' }}>
+          <button className="nav-mobile-toggle" onClick={() => setIsMobileMenuOpen(false)}>
+            <X size={32} />
+          </button>
+        </div>
+        
+        {['public', 'properties-list', 'map-search', 'admin-dashboard'].map((viewOpt) => (
+          <button 
+            key={viewOpt}
+            onClick={() => {
+              setView(viewOpt);
+              setIsMobileMenuOpen(false);
+            }}
+            style={{ 
+              background: 'none', border: 'none', cursor: 'pointer',
+              fontFamily: 'Montserrat, sans-serif',
+              fontWeight: 700,
+              textTransform: 'uppercase',
+              letterSpacing: '2px'
+            }}
+          >
+            {viewOpt === 'public' ? 'Inicio' : viewOpt === 'properties-list' ? 'Propiedades' : viewOpt === 'map-search' ? 'Mapa' : 'Dashboard'}
+          </button>
+        ))}
+      </div>
+
+      <nav className="glass-panel nav-glass-panel" style={{
       position: 'fixed',
       top: isTransparent ? '0' : '1.2rem',
       left: '50%',
@@ -70,7 +101,7 @@ const Navbar = ({ setView, currentView }) => {
         </div>
       </div>
 
-      <div style={{ display: 'flex', gap: '3rem', fontWeight: 700, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '2px' }}>
+      <div className="nav-desktop-links" style={{ display: 'flex', gap: '3rem', fontWeight: 700, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '2px' }}>
         {['public', 'properties-list', 'map-search'].map((view) => (
           <button 
             key={view}
@@ -91,7 +122,7 @@ const Navbar = ({ setView, currentView }) => {
         ))}
       </div>
 
-      <div style={{ display: 'flex', gap: '1.5rem' }}>
+      <div className="nav-desktop-links" style={{ display: 'flex', gap: '1.5rem' }}>
         <button 
           onClick={() => setView('admin-dashboard')}
           className="btn-premium btn-premium-primary"
@@ -100,7 +131,16 @@ const Navbar = ({ setView, currentView }) => {
           Dashboard
         </button>
       </div>
+
+      <button 
+        className="nav-mobile-toggle" 
+        onClick={() => setIsMobileMenuOpen(true)}
+        style={{ color: isTransparent ? 'white' : 'var(--primary)' }}
+      >
+        <Menu size={28} />
+      </button>
     </nav>
+    </>
   );
 };
 

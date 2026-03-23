@@ -74,7 +74,7 @@ const HeroSearcher = () => {
       </motion.div>
 
       {/* SEARCH BAR PANEL */}
-      <div className="glass-panel" style={{
+      <div className="glass-panel hero-search-grid" style={{
         padding: '1.5rem 2rem',
         borderRadius: 'var(--radius-sm)',
         width: '100%',
@@ -88,7 +88,7 @@ const HeroSearcher = () => {
         boxShadow: '0 30px 60px rgba(0,0,0,0.3)',
         border: 'none'
       }}>
-        <div style={{ textAlign: 'left', borderRight: '1px solid var(--border)', paddingRight: '2rem' }}>
+        <div className="hero-search-item" style={{ textAlign: 'left', borderRight: '1px solid var(--border)', paddingRight: '2rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.5rem', color: 'var(--text-muted)' }}>
             <MapPin size={16} color="var(--accent)" /> 
             <span className="text-body-small" style={{ fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px' }}>Ubicación</span>
@@ -106,7 +106,7 @@ const HeroSearcher = () => {
           />
         </div>
 
-        <div style={{ textAlign: 'left', borderRight: '1px solid var(--border)', paddingRight: '2rem' }}>
+        <div className="hero-search-item" style={{ textAlign: 'left', borderRight: '1px solid var(--border)', paddingRight: '2rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.5rem', color: 'var(--text-muted)' }}>
             <Building size={16} color="var(--accent)" /> 
             <span className="text-body-small" style={{ fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px' }}>Operación</span>
@@ -122,7 +122,7 @@ const HeroSearcher = () => {
           </select>
         </div>
 
-        <div style={{ textAlign: 'left' }}>
+        <div className="hero-search-item" style={{ textAlign: 'left' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.5rem', color: 'var(--text-muted)' }}>
             <HomeIcon size={16} color="var(--accent)" /> 
             <span className="text-body-small" style={{ fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px' }}>Tipo</span>
