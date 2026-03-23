@@ -1,38 +1,32 @@
-import React, { useMemo } from 'react';
+import React, { useState } from 'react';
 import { useStore } from '../../lib/mockStore';
-import { Bed, Bath, ArrowRight, Grid, LayoutList } from 'lucide-react';
+import { Maximize, Bath, Bed, MapPin, ArrowRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import MapsModal from './MapsModal';
 
-const PropertyGrid = ({ setView }) => {
-  const { properties, filteredProperties, filters, setDetailedPropertyId } = useStore();
+const PropertyGrid = ({ setView, limit }) => {
+  const properties = useStore((state) => state.properties);
+  const filters = useStore((state) => state.filters);
+  const getFilteredProperties = useStore((state) => state.getFilteredProperties);
+  const [selectedProp, setSelectedProp] = useState(null);
 
-  const isFiltered = filters.location !== '' || filters.operation !== 'Todas' || filters.type !== 'Todos' || filters.rooms !== 'Todos';
-  
-  // Use filtered properties if active, otherwise grab visually top properties
-  const displayProps = isFiltered 
-    ? filteredProperties 
-    : properties.filter(p => p.status === 'Destacado').slice(0, 3);
-  
-  const isEmpty = isFiltered && filteredProperties.length === 0;
+  let displayProps = getFilteredProperties();
+  const isEmpty = displayProps.length === 0;
 
-  const onPropertySelect = (id) => {
-    setDetailedPropertyId(id);
-    setView('property-detail');
-  };
+  if (isEmpty) {
+    displayProps = properties.slice(0, 3);
+  } else if (limit) {
+    displayProps = displayProps.slice(0, limit);
+  }
 
   return (
-    <div className="container" id="properties" style={{ padding: '6rem 5%' }}>
-      
-      {!isFiltered && (
-        <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-        <AnimatePresence mode="wait">
-          <h3 key={setView} className="text-h3" style={{ color: 'var(--primary)', marginBottom: '0.5rem', letterSpacing: '-0.5px' }}>
-            {setView === 'public' ? 'Propiedades Recientes' : 'Explorar Mapa'}
-          </h3>
-        </AnimatePresence>
-        <p className="text-body-large" style={{ color: 'var(--text-muted)' }}>Pero estas opciones destacadas te pueden interesar:</p>
-      </div>
-      )}
+    <div className="property-grid-container property-grid-responsive" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 'var(--grid-gap, 3rem)' }}>
+      <MapsModal 
+        isOpen={!!selectedProp} 
+        onClose={() => setSelectedProp(null)} 
+        address={selectedProp?.location.address}
+        city={selectedProp?.location.city}
+      />
 
       {isEmpty && (
         <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
@@ -46,34 +40,27 @@ const PropertyGrid = ({ setView }) => {
       )}
 
       {displayProps.map((p, idx) => (
-        <motion.div 
+        <motion.article 
           key={p.id}
           initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: idx * 0.1 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: idx * 0.1, duration: 0.8 }}
           className="property-card"
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'minmax(400px, 1fr) 1.2fr',
-            borderRadius: 'var(--radius-md)',
-            marginBottom: '3rem',
-            background: 'var(--white)',
-            boxShadow: 'var(--shadow-subtle)',
-            border: '1px solid var(--border)'
+          style={{ 
+            display: 'flex', 
+            flexDirection: 'column',
+            border: 'none',
+            background: 'transparent'
           }}
         >
-          {/* Image Side */}
-          <div style={{ position: 'relative', overflow: 'hidden' }}>
-            <div 
+          <div style={{ position: 'relative', height: '350px', overflow: 'hidden', marginBottom: '1.2rem', borderRadius: '16px' }}>
+            <img 
+              onClick={() => setView('property-detail', p.id)}
+              src={p.media.find(m => m.type === 'Foto')?.url || p.media[0]?.url} 
+              alt={p.title} 
+              style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'var(--transition)', cursor: 'pointer' }} 
               className="card-img"
-              style={{
-                width: '100%',
-                height: '100%',
-                minHeight: '350px',
-                backgroundImage: `url(${p.media.find(m => m.type === 'Foto')?.url || p.media[0]?.url})`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-              }}
             />
             <div style={{ 
               position: 'absolute', 
@@ -87,20 +74,26 @@ const PropertyGrid = ({ setView }) => {
               {p.operation}
             </div>
             
-            <button style={{
-              position: 'absolute',
-              bottom: '1.5rem',
-              right: '1.5rem',
-              background: 'rgba(255,255,255,0.9)',
-              border: 'none',
-              padding: '0.6rem',
-              borderRadius: '50%',
-              cursor: 'pointer',
-              color: 'var(--primary)',
-              backdropFilter: 'blur(5px)',
-              boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
-            }}>
-              <Grid size={18} />
+            <button 
+              onClick={(e) => { e.stopPropagation(); setSelectedProp(p); }}
+              style={{
+                position: 'absolute',
+                bottom: '1.5rem',
+                right: '1.5rem',
+                width: '45px',
+                height: '45px',
+                borderRadius: '50%',
+                background: 'var(--white)',
+                border: 'none',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                boxShadow: 'var(--shadow-premium)',
+                color: 'var(--primary)'
+              }}
+            >
+              <MapPin size={18} />
             </button>
           </div>
 
@@ -128,16 +121,22 @@ const PropertyGrid = ({ setView }) => {
                 <Bed size={16} strokeWidth={1.5} /> <span>{p.attributes.bedrooms} Dorm.</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <Bath size={16} strokeWidth={1.5} /> <span>{p.attributes.baths} Baños</span>
+                <Maximize size={16} strokeWidth={1.5} /> <span>{p.attributes.m2} m² cubiertos</span>
               </div>
             </div>
 
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', paddingTop: '1.5rem', borderTop: '1px solid var(--border)' }}>
-              <div className="text-h4" style={{ color: 'var(--primary)' }}>
-                <span className="text-body-small" style={{ marginRight: '5px' }}>USD</span>
-                {p.price_data.amount.toLocaleString()}
+              <div className="text-h4" style={{ color: p.is_price_hidden ? 'var(--accent)' : 'var(--primary)', fontWeight: p.is_price_hidden ? 900 : undefined }}>
+                {p.is_price_hidden ? (
+                  'CONSULTAR'
+                ) : (
+                  <>
+                    <span className="text-body-small" style={{ marginRight: '5px' }}>USD</span>
+                    {p.price_data.amount.toLocaleString()}
+                  </>
+                )}
               </div>
-              <button className="text-button" style={{ 
+              <button className={`text-button ${p.is_price_hidden ? 'pulse-text' : ''}`} style={{ 
                   background: 'transparent', border: 'none', color: 'var(--accent)', 
                   display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer',
                   borderBottom: '2px solid transparent', paddingBottom: '2px', transition: 'var(--transition)'
@@ -149,16 +148,24 @@ const PropertyGrid = ({ setView }) => {
               </button>
             </div>
           </div>
-        </motion.div>
+        </motion.article>
       ))}
 
-      {isFiltered && displayProps.length > 0 && (
-        <div style={{ textAlign: 'center', marginTop: '2rem' }}>
-          <button className="btn-premium" style={{ background: 'transparent', border: '2px solid var(--border)', color: 'var(--primary)' }}>
-            Cargar Más Resultados
-          </button>
-        </div>
-      )}
+      <style>{`
+        .property-card:hover .card-img {
+          transform: scale(1.05);
+        }
+        @keyframes pulseSoftText {
+          0% { opacity: 0.7; transform: scale(1); }
+          50% { opacity: 1; transform: scale(1.03); }
+          100% { opacity: 0.7; transform: scale(1); }
+        }
+        .pulse-text {
+          animation: pulseSoftText 2s infinite ease-in-out;
+          text-transform: uppercase;
+          font-weight: 800;
+        }
+      `}</style>
     </div>
   );
 };
