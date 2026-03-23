@@ -1,22 +1,51 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 const Navbar = ({ setView, currentView }) => {
+  const [scrolled, setScrolled] = useState(false);
+  const [hidden, setHidden] = useState(false);
+  const [lastScrollY, setLastScrollY] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      if (currentScrollY > 50) {
+        setScrolled(true);
+        if (currentScrollY > lastScrollY && currentScrollY > 200) {
+          setHidden(true); // scrolling down
+        } else {
+          setHidden(false); // scrolling up
+        }
+      } else {
+        setScrolled(false);
+        setHidden(false);
+      }
+      setLastScrollY(currentScrollY);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [lastScrollY]);
+
+  const isDetail = currentView === 'property-detail';
+  const isTransparent = isDetail && !scrolled;
+
   return (
     <nav className="glass-panel" style={{
       position: 'fixed',
-      top: '1.2rem',
+      top: isTransparent ? '0' : '1.2rem',
       left: '50%',
-      transform: 'translateX(-50%)',
-      width: '95%',
-      maxWidth: '1400px',
-      zIndex: 4000, // Higher than any other panel
-      padding: '1rem 3.5rem',
-      borderRadius: 'var(--radius-sm)',
+      transform: `translate(-50%, ${hidden ? '-150%' : '0'})`,
+      width: isTransparent ? '100%' : '95%',
+      maxWidth: isTransparent ? '100%' : '1400px',
+      zIndex: 4000, 
+      padding: isTransparent ? '1.5rem 4rem' : '1rem 3.5rem',
+      borderRadius: isTransparent ? '0' : 'var(--radius-sm)',
       display: 'flex',
       justifyContent: 'space-between',
       alignItems: 'center',
-      border: '1px solid rgba(16, 24, 40, 0.05)',
-      background: 'rgba(255, 255, 255, 0.95)'
+      border: isTransparent ? 'none' : '1px solid rgba(16, 24, 40, 0.05)',
+      background: isTransparent ? 'linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, transparent 100%)' : 'rgba(255, 255, 255, 0.95)',
+      boxShadow: isTransparent ? 'none' : '0 10px 30px rgba(0,0,0,0.05)',
+      transition: 'all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)'
     }}>
       <div 
         className="logo" 
@@ -27,8 +56,10 @@ const Navbar = ({ setView, currentView }) => {
           flexDirection: 'column',
           alignItems: 'center',
           gap: '0.2rem', 
-          color: 'var(--primary)', 
+          color: isTransparent ? 'white' : 'var(--primary)', 
           cursor: 'pointer',
+          textShadow: isTransparent ? '0 2px 4px rgba(0,0,0,0.5)' : 'none',
+          transition: 'color 0.3s'
         }}
       >
         <div style={{ fontWeight: 800, fontSize: '1.4rem', letterSpacing: '2px', lineHeight: 1 }}>
@@ -46,10 +77,13 @@ const Navbar = ({ setView, currentView }) => {
             onClick={() => setView(view)}
             style={{ 
               background: 'none', border: 'none', cursor: 'pointer',
-              color: currentView === view ? 'var(--accent)' : 'var(--text-muted)',
+              color: currentView === view 
+                 ? 'var(--accent)' 
+                 : (isTransparent ? 'white' : 'var(--text-muted)'),
               transition: 'var(--transition)',
               fontFamily: 'Montserrat, sans-serif',
-              letterSpacing: '2px'
+              letterSpacing: '2px',
+              textShadow: isTransparent && currentView !== view ? '0 2px 4px rgba(0,0,0,0.5)' : 'none'
             }}
           >
             {view === 'public' ? 'Inicio' : view === 'properties-list' ? 'Propiedades' : 'Mapa'}
@@ -58,9 +92,6 @@ const Navbar = ({ setView, currentView }) => {
       </div>
 
       <div style={{ display: 'flex', gap: '1.5rem' }}>
-        <button className="btn-premium" style={{ border: '1px solid var(--border)', background: 'transparent', padding: '0.6rem 2rem', fontSize: '0.7rem' }}>
-          Contactar
-        </button>
         <button 
           onClick={() => setView('admin-dashboard')}
           className="btn-premium btn-premium-primary"

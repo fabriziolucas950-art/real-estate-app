@@ -7,6 +7,7 @@ import PropertyDetail from '../pages/PropertyDetail';
 import Navbar from '../components/layout/Navbar';
 import Footer from '../components/layout/Footer';
 import WhatsAppCTA from '../components/public/WhatsAppCTA';
+// import AIChatbot from '../components/public/AIChatbot';
 
 const MainLayout = () => {
   const [view, setView] = useState('public');
@@ -48,6 +49,7 @@ const MainLayout = () => {
   return (
     <div className="ecosystem-shell" style={{ backgroundColor: 'var(--background)' }}>
       <WhatsAppCTA />
+      {/* <AIChatbot /> */}
       
       <div className="main-content">
         <Navbar setView={handleSetView} currentView={view} />
